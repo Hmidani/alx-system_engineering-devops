@@ -1,41 +1,34 @@
 #!/usr/bin/env bash
-# Configure your Nginx to call servers by their names
-
-apt-get update
-apt-get install nginx -y
+# configure web-02 to be identical to web-01
+# The name of custom HTTP header must be X-Served-By
+# The value of custom HTTP header must be the hostname of the server Nginx is running on
+#sudo sed -i 's/server_name _;.*/server_name _;\n\tadd_header X-Served-By \$hostname;/' /etc/nginx/sites-enabled/default 
+sudo apt-get -y update
+sudo apt-get -y install nginx
 sudo ufw allow 'Nginx HTTP'
-mkdir -p /var/www/html/
+sudo mkdir -p /var/www/html /var/www/error
 sudo chmod -R 755 /var/www
 echo 'Hello World!' > /var/www/html/index.html
-echo "Ceci n'est pas une page!" > /var/www/html/404.html
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+server_config=\
+"server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	root /var/www/html;
+	index index.html index.htm index.nginx-debian.html;
+	server_name _;
+	add_header X-Served-By \$hostname;
+	location / {
+		try_files \$uri \$uri/ =404;
+	}
+	if (\$request_filename ~ redirect_me){
+		rewrite ^ https://youtube.com permanent;
+	}
+	error_page 404 /404.html;
+	location = /404.html {
+		internal;
+	}
+}"
 
-SERVER_CONFIG=$(cat <<EOF
-map \$hostname \$var1 {
-    ~*01\$ web-01;
-    default web-02;
-}
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    add_header X-Served-By \$var1;
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-    server_name _;
-    if (\$request_filename ~ redirect_me){
-        rewrite ^ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;
-    }
-    error_page 404 /404.html;
-    location = /404.html {
-        internal;
-    }
-}
-EOF
-)
-
-echo "$SERVER_CONFIG" > /etc/nginx/sites-enabled/default
-
-if [ "$(pgrep -c nginx)" -le 0 ]; then
-        service nginx start
-else
-        service nginx restart
-fi
+echo "$server_config" > /etc/nginx/sites-enabled/default
+sudo service nginx restart
