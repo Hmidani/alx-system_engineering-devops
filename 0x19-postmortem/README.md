@@ -1,5 +1,5 @@
 #0x19-postmortem task using webstack debugging #1
-![Technical Issue Resolution](./0x19-postmortem/API_outage_image.jpg.webp)
+![Technical Issue Resolution](./API_outage_image.webp)
 
 # Issue Summary
 Duration of the Outage: January 24, 2025, from 13:15 UTC to 14:45 UTC (1 hour 30 minutes)
