@@ -1,12 +1,16 @@
+#0x19-postmortem task using webstack debugging #1
+![Technical Issue Resolution](./0x19-postmortem/API_outage_image.jpg.webp)
 
+# Issue Summary
+Duration of the Outage: January 24, 2025, from 13:15 UTC to 14:45 UTC (1 hour 30 minutes)
 
-Postmortem: API Gateway Outage – The Great Throttle Apocalypse
+# Impact:
+Picture this: You're about to log in, but the API says, "Nope!" That was the reality for 60% of our users. Web and mobile apps slowed to a crawl or stopped working altogether. Our customer support inbox turned into a digital bonfire of complaints, while our monitoring system screamed in panic.
 
-(Just kidding, but you get the idea.)
+# Root Cause:
+A well-meaning but overly aggressive rate-limiting rule decided that too many legitimate requests were suspicious, throttling everyone into oblivion. The API Gateway choked, requests piled up, and the system tapped out.
 
-Issue SummaryDuration of the Outage: January 24, 2025, from 13:15 UTC to 14:45 UTC (1 hour 30 minutes)Impact: Picture this: You're about to log in, but the API says, "Nope!" That was the reality for 60% of our users. Web and mobile apps slowed to a crawl or stopped working altogether. Our customer support inbox turned into a digital bonfire of complaints, while our monitoring system screamed in panic.Root Cause: A well-meaning but overly aggressive rate-limiting rule decided that too many legitimate requests were suspicious, throttling everyone into oblivion. The API Gateway choked, requests piled up, and the system tapped out.
-
-Timeline
+# Timeline
 
 13:15 UTC - Monitoring alerts started flashing red like a Christmas tree, indicating sluggish API response times.
 
@@ -30,9 +34,11 @@ Timeline
 
 14:45 UTC - Full service restored, and our engineers took a well-deserved coffee break.
 
+# Root Cause and Resolution
+
 Root Cause and ResolutionThe culprit? An overzealous rate-limiting rule designed to curb excessive API requests. Instead of blocking just the bad actors, it swung its mighty hammer at everyone, causing legitimate traffic to be throttled into oblivion. This led to a backlog of requests, which in turn exhausted API Gateway resources.
 
-Resolution:
+# Resolution:
 
 Rolled back the faulty rate-limiting configuration.
 
@@ -40,25 +46,24 @@ Restarted API Gateway instances to flush out clogged request queues.
 
 Monitored system recovery and confirmed that normal request handling resumed.
 
+# Corrective and Preventative Measures
+
 Corrective and Preventative MeasuresTo prevent another "APIpocalypse," we’re implementing the following:
 
-Sanity Check Before Deploying Limits: Test rate-limiting changes in staging before they wreak havoc in production.
+# Sanity Check Before Deploying Limits: 
+Test rate-limiting changes in staging before they wreak havoc in production.
 
-Enhanced Monitoring: Custom alerts for unexpected HTTP 429 spikes – because no one likes surprises.
+# Enhanced Monitoring: 
+Custom alerts for unexpected HTTP 429 spikes – because no one likes surprises.
 
-Automated Rollback Mechanism: If rate limits tank traffic unexpectedly, roll back immediately.
+# Automated Rollback Mechanism: 
+If rate limits tank traffic unexpectedly, roll back immediately.
 
-Engineer Training: Ensure on-call teams can recognize and diagnose throttling issues faster than you can say "rate limit exceeded."
+# Engineer Training: 
+Ensure on-call teams can recognize and diagnose throttling issues faster than you can say "rate limit exceeded."
 
-Better Logging: Differentiate between legitimate and suspicious traffic, so debugging isn’t an episode of CSI: API Gateway.
+# Better Logging: 
+Differentiate between legitimate and suspicious traffic, so debugging isn’t an episode of CSI: API Gateway.
 
 By implementing these measures, we aim to keep our API Gateway from turning into a digital gatekeeper gone rogue. Lessons learned, battle scars earned – on to the next deployment (hopefully with fewer surprises).
-
-Add Logging Improvements: Enhance logging to differentiate between legitimate and excessive traffic, making debugging easier in future incidents.
-
-By implementing these measures, we aim to enhance system reliability and prevent similar outages in the future.
-
-Configuration Management Review: Introduce stricter approval processes for API Gateway settings changes.
-
-By implementing these measures, we aim to enhance system reliability and prevent similar outages in the future.
 
